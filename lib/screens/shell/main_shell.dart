@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/theme/app_colors.dart';
 import '../../state/navigation_provider.dart';
 import '../home/home_screen.dart';
 import '../profile/medical_profile_screen.dart';
@@ -29,30 +28,25 @@ class MainShell extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: ref.read(navIndexProvider.notifier).select,
-        backgroundColor: Colors.white,
-        indicatorColor: AppColors.primaryTint,
         destinations: const [
           NavigationDestination(
             icon: Icon(CupertinoIcons.house),
-            selectedIcon:
-                Icon(CupertinoIcons.house_fill, color: AppColors.primary),
+            selectedIcon: Icon(CupertinoIcons.house_fill),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(CupertinoIcons.search),
-            selectedIcon: Icon(CupertinoIcons.search, color: AppColors.primary),
+            selectedIcon: Icon(CupertinoIcons.search),
             label: 'Explore',
           ),
           NavigationDestination(
             icon: Icon(CupertinoIcons.doc_text),
-            selectedIcon:
-                Icon(CupertinoIcons.doc_text_fill, color: AppColors.primary),
+            selectedIcon: Icon(CupertinoIcons.doc_text_fill),
             label: 'Ticket',
           ),
           NavigationDestination(
             icon: Icon(CupertinoIcons.person_crop_circle),
-            selectedIcon: Icon(CupertinoIcons.person_crop_circle_fill,
-                color: AppColors.primary),
+            selectedIcon: Icon(CupertinoIcons.person_crop_circle_fill),
             label: 'Profile',
           ),
         ],

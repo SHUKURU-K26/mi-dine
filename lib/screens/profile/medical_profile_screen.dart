@@ -8,10 +8,9 @@ import '../../core/utils/error_text.dart';
 import '../../models/allergen.dart';
 import '../../models/severity.dart';
 import '../../models/user_allergen.dart';
-import '../../repositories/auth_repository.dart';
-import '../../state/navigation_provider.dart';
 import '../../state/profile_provider.dart';
 import '../../widgets/error_state.dart';
+import 'settings_screen.dart';
 
 class MedicalProfileScreen extends ConsumerWidget {
   const MedicalProfileScreen({super.key});
@@ -26,9 +25,11 @@ class MedicalProfileScreen extends ConsumerWidget {
         title: const Text('Medical profile'),
         actions: [
           IconButton(
-            tooltip: 'Sign out',
-            icon: const Icon(CupertinoIcons.arrow_right_square),
-            onPressed: () => _confirmSignOut(context, ref),
+            tooltip: 'Settings',
+            icon: const Icon(CupertinoIcons.gear),
+            onPressed: () => Navigator.of(context).push(
+              CupertinoPageRoute(builder: (_) => const SettingsScreen()),
+            ),
           ),
         ],
       ),
@@ -55,30 +56,6 @@ class MedicalProfileScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
-    final ok = await showCupertinoDialog<bool>(
-      context: context,
-      builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('Sign out?'),
-        content: const Text('You will need to sign in again to see your profile.'),
-        actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Sign out'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
-      ref.invalidate(navIndexProvider);
-      await ref.read(authRepositoryProvider).signOut();
-    }
-  }
 }
 
 class _Body extends ConsumerWidget {

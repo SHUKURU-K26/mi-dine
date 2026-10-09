@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../core/theme/app_palette.dart';
 
 class GlassContainer extends StatelessWidget {
   const GlassContainer({
@@ -15,6 +16,7 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final pal = context.pal;
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
@@ -22,9 +24,9 @@ class GlassContainer extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
+            color: pal.surface.withValues(alpha: 0.65),
             borderRadius: BorderRadius.circular(radius),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
+            border: Border.all(color: pal.tint.withValues(alpha: 0.9)),
           ),
           child: child,
         ),

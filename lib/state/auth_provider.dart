@@ -24,3 +24,10 @@ final userNameProvider = Provider<String>((ref) {
   final meta = Supabase.instance.client.auth.currentUser?.userMetadata;
   return (meta?['full_name'] ?? meta?['name'] ?? '').toString().trim();
 });
+
+
+/// The signed-in user's email. Empty string if unknown.
+final userEmailProvider = Provider<String>((ref) {
+  ref.watch(authStateProvider);
+  return Supabase.instance.client.auth.currentUser?.email ?? '';
+});
