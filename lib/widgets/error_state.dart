@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import '../core/theme/app_colors.dart';
 
 class ErrorState extends StatelessWidget {
@@ -16,14 +17,14 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(CupertinoIcons.exclamationmark_circle,
+            Icon(CupertinoIcons.exclamationmark_circle,
                 size: 44, color: AppColors.unsafe),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted, height: 1.4)),
-            const SizedBox(height: 20),
-            OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
+                style: TextStyle(color: context.pal.muted, height: 1.4)),
+            SizedBox(height: 20),
+            OutlinedButton(onPressed: onRetry, child: Text('Try again')),
           ],
         ),
       ),

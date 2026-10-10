@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -57,27 +58,27 @@ class _RestaurantDetailScreenState
                 tag: 'restaurant-${r.id}',
                 child: RestaurantAvatar(name: r.name, size: 68),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(r.name,
                         style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(r.cuisine,
-                        style: const TextStyle(
-                            color: AppColors.primary,
+                        style: TextStyle(
+                            color: context.pal.accent,
                             fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Row(children: [
-                      const Icon(CupertinoIcons.location,
-                          size: 14, color: AppColors.textMuted),
-                      const SizedBox(width: 4),
+                      Icon(CupertinoIcons.location,
+                          size: 14, color: context.pal.muted),
+                      SizedBox(width: 4),
                       Expanded(
                         child: Text(r.address,
-                            style: const TextStyle(
-                                color: AppColors.textMuted, fontSize: 13)),
+                            style: TextStyle(
+                                color: context.pal.muted, fontSize: 13)),
                       ),
                     ]),
                   ],
@@ -85,16 +86,16 @@ class _RestaurantDetailScreenState
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           Text(r.description,
-              style: const TextStyle(color: AppColors.textMuted, height: 1.45)),
-          const SizedBox(height: 24),
+              style: TextStyle(color: context.pal.muted, height: 1.45)),
+          SizedBox(height: 24),
           if (mine.isEmpty) ...[
             _NoProfileBanner(onTap: () => _goToTab(3)),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
           ],
           dishes.when(
-            loading: () => const Column(children: [
+            loading: () => Column(children: [
               SkeletonBox(height: 80),
               SizedBox(height: 10),
               SkeletonBox(height: 80),
@@ -110,7 +111,7 @@ class _RestaurantDetailScreenState
               hasProfile: mine.isNotEmpty,
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           ReviewsSection(restaurantId: r.id),
         ],
       ),
@@ -131,11 +132,11 @@ class _RestaurantDetailScreenState
             children: [
               for (final level in SafetyLevel.values) ...[
                 Expanded(child: _CountTile(level: level, count: count(level))),
-                if (level != SafetyLevel.unsafe) const SizedBox(width: 10),
+                if (level != SafetyLevel.unsafe) SizedBox(width: 10),
               ],
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
         Row(
           children: [
@@ -144,9 +145,9 @@ class _RestaurantDetailScreenState
                   style: Theme.of(context).textTheme.titleMedium),
             ),
             if (hasProfile) ...[
-              const Text('Safe only',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-              const SizedBox(width: 8),
+              Text('Safe only',
+                  style: TextStyle(color: context.pal.muted, fontSize: 13)),
+              SizedBox(width: 8),
               CupertinoSwitch(
                 value: _safeOnly,
                 activeTrackColor: AppColors.primary,
@@ -155,14 +156,14 @@ class _RestaurantDetailScreenState
             ],
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         if (visible.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
             child: Center(
               child: Text(
                 'No safe dishes on this menu for your profile.',
-                style: TextStyle(color: AppColors.textMuted),
+                style: TextStyle(color: context.pal.muted),
               ),
             ),
           )
@@ -173,17 +174,17 @@ class _RestaurantDetailScreenState
               delayMs: min(i * 40, 300),
               child: _DishCard(assessment: a, showStatus: hasProfile),
             ),
-        const SizedBox(height: 8),
-        const Text(
+        SizedBox(height: 8),
+        Text(
           'Ingredient information is provided by the restaurant. Always confirm with the kitchen.',
-          style: TextStyle(color: AppColors.textMuted, fontSize: 12, height: 1.4),
+          style: TextStyle(color: context.pal.muted, fontSize: 12, height: 1.4),
         ),
         if (hasProfile) ...[
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => _goToTab(2),
-            icon: const Icon(CupertinoIcons.doc_text_fill),
-            label: const Text('Open my Kitchen Ticket'),
+            icon: Icon(CupertinoIcons.doc_text_fill),
+            label: Text('Open my Kitchen Ticket'),
           ),
         ],
       ],
@@ -211,13 +212,13 @@ class _CountTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(level.icon, size: 18, color: color),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           Text('$count',
               style: TextStyle(
                   fontSize: 24, fontWeight: FontWeight.w800, color: color)),
           Text(level.label,
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textMuted)),
+              style: TextStyle(
+                  fontSize: 12, color: context.pal.muted)),
         ],
       ),
     );
@@ -240,12 +241,12 @@ class _DishCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.pal.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: showStatus
               ? color.withValues(alpha: 0.5)
-              : AppColors.primaryTint,
+              : context.pal.tint,
           width: 1.5,
         ),
       ),
@@ -260,13 +261,13 @@ class _DishCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(dish.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 15)),
                     if (dish.description.isNotEmpty) ...[
-                      const SizedBox(height: 3),
+                      SizedBox(height: 3),
                       Text(dish.description,
-                          style: const TextStyle(
-                              color: AppColors.textMuted,
+                          style: TextStyle(
+                              color: context.pal.muted,
                               fontSize: 13,
                               height: 1.35)),
                     ],
@@ -277,21 +278,21 @@ class _DishCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 12),
                   child: Text('\$${dish.price!.toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primaryDark)),
+                          color: context.pal.strong)),
                 ),
             ],
           ),
           if (showStatus) ...[
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             SafetyBadge(level: assessment.level),
             for (final reason in assessment.reasons)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(reason,
-                    style: const TextStyle(
-                        fontSize: 12.5, color: AppColors.textMuted)),
+                    style: TextStyle(
+                        fontSize: 12.5, color: context.pal.muted)),
               ),
           ],
         ],
@@ -310,22 +311,22 @@ class _NoProfileBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primaryTint,
+        color: context.pal.tint,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          const Icon(CupertinoIcons.info_circle,
-              size: 20, color: AppColors.primary),
-          const SizedBox(width: 12),
-          const Expanded(
+          Icon(CupertinoIcons.info_circle,
+              size: 20, color: context.pal.accent),
+          SizedBox(width: 12),
+          Expanded(
             child: Text(
               'Add your allergens to see which dishes are safe for you.',
               style: TextStyle(
-                  fontSize: 13, height: 1.4, color: AppColors.primaryDark),
+                  fontSize: 13, height: 1.4, color: context.pal.strong),
             ),
           ),
-          TextButton(onPressed: onTap, child: const Text('Add')),
+          TextButton(onPressed: onTap, child: Text('Add')),
         ],
       ),
     );

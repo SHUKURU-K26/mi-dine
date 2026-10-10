@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 
 class AppTextField extends StatefulWidget {
   const AppTextField({
@@ -39,13 +39,13 @@ class _AppTextFieldState extends State<AppTextField> {
       textInputAction: widget.textInputAction,
       decoration: InputDecoration(
         labelText: widget.label,
-        prefixIcon: Icon(widget.icon, size: 20, color: AppColors.primary),
+        prefixIcon: Icon(widget.icon, size: 20, color: context.pal.accent),
         suffixIcon: widget.isPassword
             ? IconButton(
                 icon: Icon(
                   _hidden ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
                   size: 20,
-                  color: AppColors.textMuted,
+                  color: context.pal.muted,
                 ),
                 onPressed: () => setState(() => _hidden = !_hidden),
               )

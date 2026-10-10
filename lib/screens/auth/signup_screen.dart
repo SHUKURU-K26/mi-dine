@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -57,8 +58,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final loading = ref.watch(authControllerProvider).isLoading;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white),
+      backgroundColor: context.pal.surface,
+      appBar: AppBar(backgroundColor: context.pal.surface),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -72,19 +73,19 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   children: [
                     Text('Create your account',
                         style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 6),
-                    const Text(
+                    SizedBox(height: 6),
+                    Text(
                       'Set up your medical dining profile in minutes',
-                      style: TextStyle(color: AppColors.textMuted),
+                      style: TextStyle(color: context.pal.muted),
                     ),
-                    const SizedBox(height: 28),
+                    SizedBox(height: 28),
                     AppTextField(
                       label: 'Full name',
                       controller: _name,
                       icon: CupertinoIcons.person,
                       validator: (v) => Validators.required(v, 'Name'),
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     AppTextField(
                       label: 'Email',
                       controller: _email,
@@ -92,7 +93,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       keyboardType: TextInputType.emailAddress,
                       validator: Validators.email,
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     AppTextField(
                       label: 'Password',
                       controller: _password,
@@ -100,7 +101,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       isPassword: true,
                       validator: Validators.password,
                     ),
-                    const SizedBox(height: 14),
+                    SizedBox(height: 14),
                     AppTextField(
                       label: 'Confirm password',
                       controller: _confirm,
@@ -109,7 +110,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       textInputAction: TextInputAction.done,
                       validator: (v) => Validators.confirm(v, _password.text),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     LoadingButton(
                         label: 'Create account',
                         onPressed: _submit,

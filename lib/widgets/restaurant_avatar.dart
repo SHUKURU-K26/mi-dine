@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 
 class RestaurantAvatar extends StatelessWidget {
   const RestaurantAvatar({super.key, required this.name, this.size = 56});
@@ -17,7 +17,7 @@ class RestaurantAvatar extends StatelessWidget {
         height: size,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.primaryTint,
+          color: context.pal.tint,
           borderRadius: BorderRadius.circular(size * 0.3),
         ),
         child: Text(
@@ -25,7 +25,7 @@ class RestaurantAvatar extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.42,
             fontWeight: FontWeight.w800,
-            color: AppColors.primary,
+            color: context.pal.accent,
           ),
         ),
       ),

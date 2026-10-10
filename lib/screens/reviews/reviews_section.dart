@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -34,12 +35,12 @@ class ReviewsSection extends ConsumerWidget {
             ),
             TextButton.icon(
               onPressed: () => _write(context),
-              icon: const Icon(CupertinoIcons.pencil, size: 18),
-              label: const Text('Write'),
+              icon: Icon(CupertinoIcons.pencil, size: 18),
+              label: Text('Write'),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         reviews.when(
           loading: () => const SkeletonBox(height: 110),
           error: (e, _) => ErrorState(
@@ -52,20 +53,20 @@ class ReviewsSection extends ConsumerWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.pal.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primaryTint, width: 1.5),
+                  border: Border.all(color: context.pal.tint, width: 1.5),
                 ),
-                child: const Text(
+                child: Text(
                   'No reviews yet. Be the first to share how this kitchen handled your dietary needs.',
-                  style: TextStyle(color: AppColors.textMuted, height: 1.45),
+                  style: TextStyle(color: context.pal.muted, height: 1.45),
                 ),
               );
             }
             return Column(
               children: [
                 _Summary(reviews: list),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 for (final review in list)
                   _ReviewCard(
                     review: review,
@@ -86,7 +87,7 @@ class ReviewsSection extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.pal.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -107,17 +108,17 @@ class ReviewsSection extends ConsumerWidget {
     final ok = await showCupertinoDialog<bool>(
       context: context,
       builder: (ctx) => CupertinoAlertDialog(
-        title: const Text('Delete review?'),
-        content: const Text('This cannot be undone.'),
+        title: Text('Delete review?'),
+        content: Text('This cannot be undone.'),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
+            child: Text('Delete'),
           ),
         ],
       ),
@@ -157,7 +158,7 @@ class _Summary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primaryTint,
+        color: context.pal.tint,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -165,19 +166,19 @@ class _Summary extends StatelessWidget {
           Column(
             children: [
               Text(avg.toStringAsFixed(1),
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primaryDark)),
+                      color: context.pal.strong)),
               StarRating(rating: avg.round(), size: 14),
             ],
           ),
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
           Expanded(
             child: Text(
               '$fryer of ${reviews.length} ${reviews.length == 1 ? 'reviewer' : 'reviewers'} confirmed a dedicated fryer.',
-              style: const TextStyle(
-                  color: AppColors.primaryDark, height: 1.4, fontSize: 13.5),
+              style: TextStyle(
+                  color: context.pal.strong, height: 1.4, fontSize: 13.5),
             ),
           ),
         ],
@@ -206,9 +207,9 @@ class _ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.pal.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primaryTint, width: 1.5),
+        border: Border.all(color: context.pal.tint, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,21 +218,21 @@ class _ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: AppColors.primaryTint,
+                backgroundColor: context.pal.tint,
                 child: Text(review.authorName.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(
-                        color: AppColors.primary, fontWeight: FontWeight.w700)),
+                    style: TextStyle(
+                        color: context.pal.accent, fontWeight: FontWeight.w700)),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(review.authorName,
-                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                        style: TextStyle(fontWeight: FontWeight.w700)),
                     Text('${d.day}/${d.month}/${d.year}',
-                        style: const TextStyle(
-                            color: AppColors.textMuted, fontSize: 12)),
+                        style: TextStyle(
+                            color: context.pal.muted, fontSize: 12)),
                   ],
                 ),
               ),
@@ -239,14 +240,14 @@ class _ReviewCard extends StatelessWidget {
               if (isMine)
                 IconButton(
                   tooltip: 'Delete review',
-                  icon: const Icon(CupertinoIcons.trash,
+                  icon: Icon(CupertinoIcons.trash,
                       size: 18, color: AppColors.unsafe),
                   onPressed: onDelete,
                 ),
             ],
           ),
           if (review.dedicatedFryer || review.staffKnowledgeable) ...[
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 6,
@@ -257,8 +258,8 @@ class _ReviewCard extends StatelessWidget {
             ),
           ],
           if (review.comment.isNotEmpty) ...[
-            const SizedBox(height: 10),
-            Text(review.comment, style: const TextStyle(height: 1.45)),
+            SizedBox(height: 10),
+            Text(review.comment, style: TextStyle(height: 1.45)),
           ],
         ],
       ),
@@ -282,11 +283,11 @@ class _Tag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(CupertinoIcons.checkmark_alt,
+          Icon(CupertinoIcons.checkmark_alt,
               size: 14, color: AppColors.safe),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           Text(label,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.safe)),

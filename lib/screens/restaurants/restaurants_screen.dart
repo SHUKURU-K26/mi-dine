@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -47,11 +48,11 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explore'),
+        title: Text('Explore'),
         actions: [
           IconButton(
             tooltip: 'Scan QR code',
-            icon: const Icon(CupertinoIcons.qrcode_viewfinder),
+            icon: Icon(CupertinoIcons.qrcode_viewfinder),
             onPressed: _scan,
           ),
         ],
@@ -65,13 +66,13 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
               onChanged: ref.read(restaurantSearchProvider.notifier).set,
               decoration: InputDecoration(
                 hintText: 'Search restaurants or cuisines',
-                prefixIcon: const Icon(CupertinoIcons.search,
-                    size: 20, color: AppColors.primary),
+                prefixIcon: Icon(CupertinoIcons.search,
+                    size: 20, color: context.pal.accent),
                 suffixIcon: query.isEmpty
                     ? null
                     : IconButton(
-                        icon: const Icon(CupertinoIcons.clear_circled_solid,
-                            size: 20, color: AppColors.textMuted),
+                        icon: Icon(CupertinoIcons.clear_circled_solid,
+                            size: 20, color: context.pal.muted),
                         onPressed: () {
                           _search.clear();
                           ref.read(restaurantSearchProvider.notifier).set('');
@@ -94,7 +95,7 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
                         ref.read(cuisineFilterProvider.notifier).set(null),
                   ),
                   for (final c in cuisines) ...[
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     _FilterPill(
                       label: c,
                       active: selected == c,
@@ -105,7 +106,7 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
                 ],
               ),
             ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Expanded(
             child: restaurants.when(
               loading: () => const _SkeletonList(),
@@ -125,7 +126,7 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                         itemCount: list.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (_, _) => SizedBox(height: 12),
                         itemBuilder: (context, i) => FadeSlideIn(
                           key: ValueKey(list[i].id),
                           delayMs: (i * 50).clamp(0, 300),
@@ -164,10 +165,10 @@ class _FilterPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: active ? AppColors.primary : Colors.white,
+          color: active ? AppColors.primary : context.pal.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: active ? AppColors.primary : AppColors.primaryTint,
+            color: active ? AppColors.primary : context.pal.tint,
             width: 1.5,
           ),
         ),
@@ -175,7 +176,7 @@ class _FilterPill extends StatelessWidget {
           label,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: active ? Colors.white : AppColors.text,
+            color: active ? Colors.white : context.pal.text,
           ),
         ),
       ),
@@ -192,7 +193,7 @@ class _RestaurantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: context.pal.surface,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
@@ -201,7 +202,7 @@ class _RestaurantCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.primaryTint, width: 1.5),
+            border: Border.all(color: context.pal.tint, width: 1.5),
           ),
           child: Row(
             children: [
@@ -209,31 +210,31 @@ class _RestaurantCard extends StatelessWidget {
                 tag: 'restaurant-${restaurant.id}',
                 child: RestaurantAvatar(name: restaurant.name),
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(restaurant.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16)),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3),
                     Text(restaurant.cuisine,
-                        style: const TextStyle(
-                            color: AppColors.primary,
+                        style: TextStyle(
+                            color: context.pal.accent,
                             fontWeight: FontWeight.w600,
                             fontSize: 13)),
-                    const SizedBox(height: 3),
+                    SizedBox(height: 3),
                     Text(restaurant.address,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            color: AppColors.textMuted, fontSize: 13)),
+                        style: TextStyle(
+                            color: context.pal.muted, fontSize: 13)),
                   ],
                 ),
               ),
-              const Icon(CupertinoIcons.chevron_right,
-                  size: 16, color: AppColors.textMuted),
+              Icon(CupertinoIcons.chevron_right,
+                  size: 16, color: context.pal.muted),
             ],
           ),
         ),
@@ -251,8 +252,8 @@ class _SkeletonList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       itemCount: 5,
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
-      itemBuilder: (_, __) => const SkeletonBox(height: 90, radius: 18),
+      separatorBuilder: (_, _) => SizedBox(height: 12),
+      itemBuilder: (_, _) => const SkeletonBox(height: 90, radius: 18),
     );
   }
 }

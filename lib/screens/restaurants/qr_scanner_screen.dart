@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../../core/theme/app_colors.dart';
 import '../../widgets/glass_container.dart';
 
 class QrScannerScreen extends StatefulWidget {

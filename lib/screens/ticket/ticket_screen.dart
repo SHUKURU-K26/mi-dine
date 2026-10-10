@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -16,6 +17,7 @@ import '../../widgets/error_state.dart';
 import '../../widgets/fade_slide_in.dart';
 import '../../widgets/kitchen_ticket_view.dart';
 import 'chef_mode_screen.dart';
+import '../../core/theme/app_theme.dart';
 
 class TicketScreen extends ConsumerWidget {
   const TicketScreen({super.key});
@@ -32,7 +34,7 @@ class TicketScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(myAllergensProvider),
       );
     } else if (mine.value == null) {
-      body = const Center(child: CupertinoActivityIndicator());
+      body = Center(child: CupertinoActivityIndicator());
     } else if (ticket == null) {
       body = EmptyState(
         icon: CupertinoIcons.doc_text,
@@ -47,7 +49,7 @@ class TicketScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kitchen Ticket')),
+      appBar: AppBar(title: Text('Kitchen Ticket')),
       body: body,
     );
   }
@@ -64,12 +66,12 @@ class _TicketBody extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       children: [
         FadeSlideIn(
-          child: const Text(
+          child: Text(
             'Choose the language of the kitchen. Your ticket updates instantly.',
-            style: TextStyle(color: AppColors.textMuted, height: 1.45),
+            style: TextStyle(color: context.pal.muted, height: 1.45),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         FadeSlideIn(
           delayMs: 80,
           child: _LanguagePicker(
@@ -77,7 +79,7 @@ class _TicketBody extends ConsumerWidget {
             onSelect: (code) => _selectLanguage(context, ref, code),
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         FadeSlideIn(
           delayMs: 160,
           child: AnimatedSwitcher(
@@ -95,7 +97,7 @@ class _TicketBody extends ConsumerWidget {
             ),
             layoutBuilder: (current, previous) => Stack(
               alignment: Alignment.topCenter,
-              children: [...previous, if (current != null) current],
+              children: [...previous, ?current],
             ),
             child: KeyedSubtree(
               key: ValueKey(ticket.language),
@@ -103,30 +105,30 @@ class _TicketBody extends ConsumerWidget {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         FilledButton.icon(
           onPressed: () => _openChefMode(context),
-          icon: const Icon(CupertinoIcons.eye),
-          label: const Text('Show to chef'),
+          icon: Icon(CupertinoIcons.eye),
+          label: Text('Show to chef'),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _copy(context),
-                icon: const Icon(CupertinoIcons.doc_on_doc, size: 18),
-                label: const Text('Copy'),
-                style: _outlined,
+                icon: Icon(CupertinoIcons.doc_on_doc, size: 18),
+                label: Text('Copy'),
+                style: _outlined(context),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: _share,
-                icon: const Icon(CupertinoIcons.share, size: 18),
-                label: const Text('Share'),
-                style: _outlined,
+                icon: Icon(CupertinoIcons.share, size: 18),
+                label: Text('Share'),
+                style: _outlined(context),
               ),
             ),
           ],
@@ -135,10 +137,10 @@ class _TicketBody extends ConsumerWidget {
     );
   }
 
-  static final _outlined = OutlinedButton.styleFrom(
+ButtonStyle _outlined(BuildContext context) => OutlinedButton.styleFrom(
     minimumSize: const Size.fromHeight(50),
-    foregroundColor: AppColors.primary,
-    side: const BorderSide(color: AppColors.primaryTint, width: 1.5),
+    foregroundColor: context.pal.accent,
+    side: BorderSide(color: context.pal.tint, width: 1.5),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   );
 
@@ -159,8 +161,10 @@ class _TicketBody extends ConsumerWidget {
   void _openChefMode(BuildContext context) {
     Navigator.of(context).push(PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondary) =>
-          ChefModeScreen(ticket: ticket),
+      pageBuilder: (context, animation, secondary) => Theme(
+        data: AppTheme.light,
+        child: ChefModeScreen(ticket: ticket),
+      ),
       transitionsBuilder: (context, animation, secondary, child) =>
           FadeTransition(opacity: animation, child: child),
     ));
@@ -196,7 +200,7 @@ class _LanguagePicker extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: TicketTemplates.languages.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => SizedBox(width: 8),
         itemBuilder: (context, i) {
           final lang = TicketTemplates.languages[i];
           final active = lang.code == selected;
@@ -208,10 +212,10 @@ class _LanguagePicker extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 18),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: active ? AppColors.primary : Colors.white,
+                color: active ? AppColors.primary : context.pal.surface,
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: active ? AppColors.primary : AppColors.primaryTint,
+                  color: active ? AppColors.primary : context.pal.tint,
                   width: 1.5,
                 ),
               ),
@@ -219,7 +223,7 @@ class _LanguagePicker extends StatelessWidget {
                 lang.nativeName,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: active ? Colors.white : AppColors.text,
+                  color: active ? Colors.white : context.pal.text,
                 ),
               ),
             ),

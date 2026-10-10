@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({
@@ -28,22 +28,22 @@ class EmptyState extends StatelessWidget {
             Container(
               width: 72,
               height: 72,
-              decoration: const BoxDecoration(
-                color: AppColors.primaryTint,
+              decoration: BoxDecoration(
+                color: context.pal.tint,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 32, color: AppColors.primary),
+              child: Icon(icon, size: 32, color: context.pal.accent),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Text(title,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted, height: 1.4)),
+                style: TextStyle(color: context.pal.muted, height: 1.4)),
             if (actionLabel != null) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               FilledButton(
                 onPressed: onAction,
                 style: FilledButton.styleFrom(minimumSize: const Size(180, 48)),

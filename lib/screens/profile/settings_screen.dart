@@ -9,11 +9,18 @@ import '../../core/utils/error_text.dart';
 import '../../repositories/auth_repository.dart';
 import '../../state/auth_provider.dart';
 import '../../state/navigation_provider.dart';
+import '../../state/theme_provider.dart';
 import '../../state/ticket_provider.dart';
 import '../../widgets/fade_slide_in.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  static String _modeLabel(ThemeMode m) => switch (m) {
+        ThemeMode.system => 'System',
+        ThemeMode.light => 'Light',
+        ThemeMode.dark => 'Dark',
+      };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,6 +28,7 @@ class SettingsScreen extends ConsumerWidget {
     final email = ref.watch(userEmailProvider);
     final langCode = ref.watch(ticketLanguageProvider).value ?? 'en';
     final language = TicketTemplates.languageOf(langCode);
+    final mode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -40,6 +48,12 @@ class SettingsScreen extends ConsumerWidget {
                   title: 'Ticket language',
                   value: language.nativeName,
                   onTap: () => _pickLanguage(context, ref, langCode),
+                ),
+                _SettingsRow(
+                  icon: CupertinoIcons.moon,
+                  title: 'Appearance',
+                  value: _modeLabel(mode),
+                  onTap: () => _pickTheme(context, ref, mode),
                 ),
               ]),
               const SizedBox(height: 24),
@@ -99,7 +113,6 @@ class SettingsScreen extends ConsumerWidget {
     final code = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
-      backgroundColor: context.pal.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -122,8 +135,8 @@ class SettingsScreen extends ConsumerWidget {
                   title: Text(l.nativeName,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   trailing: l.code == current
-                      ? const Icon(CupertinoIcons.checkmark_alt,
-                          color: AppColors.primary)
+                      ? Icon(CupertinoIcons.checkmark_alt,
+                          color: ctx.pal.accent)
                       : null,
                   onTap: () => Navigator.pop(ctx, l.code),
                 ),
@@ -143,6 +156,48 @@ class SettingsScreen extends ConsumerWidget {
         content: Text(friendlyError(e)),
       ));
     }
+  }
+
+  Future<void> _pickTheme(
+      BuildContext context, WidgetRef ref, ThemeMode current) async {
+    final mode = await showModalBottomSheet<ThemeMode>(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Appearance',
+                  style: Theme.of(ctx).textTheme.headlineSmall),
+              const SizedBox(height: 12),
+              for (final m in ThemeMode.values)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(switch (m) {
+                    ThemeMode.system => CupertinoIcons.device_phone_portrait,
+                    ThemeMode.light => CupertinoIcons.sun_max,
+                    ThemeMode.dark => CupertinoIcons.moon,
+                  }),
+                  title: Text(_modeLabel(m),
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  trailing: m == current
+                      ? Icon(CupertinoIcons.checkmark_alt,
+                          color: ctx.pal.accent)
+                      : null,
+                  onTap: () => Navigator.pop(ctx, m),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (mode != null) ref.read(themeModeProvider.notifier).select(mode);
   }
 
   Future<void> _info(BuildContext context, String title, String message) {
@@ -261,7 +316,7 @@ class _AccountCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.primary,
+            backgroundColor: pal.brand,
             child: Text(initial,
                 style: const TextStyle(
                     color: Colors.white,
@@ -374,7 +429,7 @@ class _SettingsRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon,
-                  size: 18, color: danger ? AppColors.unsafe : AppColors.primary),
+                  size: 18, color: danger ? AppColors.unsafe : pal.accent),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -386,8 +441,8 @@ class _SettingsRow extends StatelessWidget {
             if (value != null)
               Padding(
                 padding: const EdgeInsets.only(right: 6),
-                child:
-                    Text(value!, style: TextStyle(color: pal.muted, fontSize: 13.5)),
+                child: Text(value!,
+                    style: TextStyle(color: pal.muted, fontSize: 13.5)),
               ),
             if (onTap != null && !danger)
               Icon(CupertinoIcons.chevron_right, size: 15, color: pal.muted),

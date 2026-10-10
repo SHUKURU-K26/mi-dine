@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -22,11 +23,11 @@ class MedicalProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medical profile'),
+        title: Text('Medical profile'),
         actions: [
           IconButton(
             tooltip: 'Settings',
-            icon: const Icon(CupertinoIcons.gear),
+            icon: Icon(CupertinoIcons.gear),
             onPressed: () => Navigator.of(context).push(
               CupertinoPageRoute(builder: (_) => const SettingsScreen()),
             ),
@@ -34,7 +35,7 @@ class MedicalProfileScreen extends ConsumerWidget {
         ],
       ),
       body: catalog.when(
-        loading: () => const Center(child: CupertinoActivityIndicator()),
+        loading: () => Center(child: CupertinoActivityIndicator()),
         error: (e, _) => ErrorState(
           message: friendlyError(e),
           onRetry: () => ref.invalidate(allergenCatalogProvider),
@@ -47,7 +48,7 @@ class MedicalProfileScreen extends ConsumerWidget {
             );
           }
           if (mine.value == null) {
-            return const Center(child: CupertinoActivityIndicator());
+            return Center(child: CupertinoActivityIndicator());
           }
           final selected = {for (final u in mine.value!) u.allergen.id: u};
           return _Body(allergens: allergens, selected: selected);
@@ -69,11 +70,11 @@ class _Body extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
       children: [
-        const Text(
+        Text(
           'Select every ingredient you must avoid, then set how serious it is. Your Kitchen Ticket is built from this list.',
-          style: TextStyle(color: AppColors.textMuted, height: 1.45),
+          style: TextStyle(color: context.pal.muted, height: 1.45),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         Wrap(
           spacing: 10,
           runSpacing: 10,
@@ -86,24 +87,24 @@ class _Body extends ConsumerWidget {
               ),
           ],
         ),
-        const SizedBox(height: 28),
+        SizedBox(height: 28),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.primaryTint,
+            color: context.pal.tint,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Row(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(CupertinoIcons.lock_shield,
-                  size: 20, color: AppColors.primary),
+                  size: 20, color: context.pal.accent),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Your profile is private. Only you can read or change it.',
                   style: TextStyle(
-                      fontSize: 13, height: 1.45, color: AppColors.primaryDark),
+                      fontSize: 13, height: 1.45, color: context.pal.strong),
                 ),
               ),
             ],
@@ -118,7 +119,7 @@ class _Body extends ConsumerWidget {
     final result = await showModalBottomSheet<_SheetResult>(
       context: context,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.pal.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -174,7 +175,7 @@ class _AllergenTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sev = current?.severity;
-    final color = sev?.color ?? AppColors.textMuted;
+    final color = sev?.color ?? context.pal.muted;
 
     return GestureDetector(
       onTap: onTap,
@@ -183,10 +184,10 @@ class _AllergenTile extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: sev == null ? Colors.white : color.withValues(alpha: 0.10),
+          color: sev == null ? context.pal.surface : color.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: sev == null ? AppColors.primaryTint : color,
+            color: sev == null ? context.pal.tint : color,
             width: 1.5,
           ),
         ),
@@ -202,12 +203,12 @@ class _AllergenTile extends StatelessWidget {
                 color: color,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(allergen.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 14)),
                 if (sev != null)
                   Text(sev.label, style: TextStyle(fontSize: 11, color: color)),
@@ -237,10 +238,10 @@ class _SeveritySheet extends StatelessWidget {
           children: [
             Text(allergen.name,
                 style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 4),
-            const Text('How serious is this for you?',
-                style: TextStyle(color: AppColors.textMuted)),
-            const SizedBox(height: 16),
+            SizedBox(height: 4),
+            Text('How serious is this for you?',
+                style: TextStyle(color: context.pal.muted)),
+            SizedBox(height: 16),
             for (final s in Severity.values)
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
@@ -253,29 +254,29 @@ class _SeveritySheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       color: current == s
                           ? s.color.withValues(alpha: 0.10)
-                          : Colors.white,
+                          : context.pal.surface,
                       border: Border.all(
-                        color: current == s ? s.color : AppColors.primaryTint,
+                        color: current == s ? s.color : context.pal.tint,
                         width: 1.5,
                       ),
                     ),
                     child: Row(
                       children: [
                         Icon(s.icon, color: s.color, size: 22),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(s.label,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontWeight: FontWeight.w700)),
-                              const SizedBox(height: 2),
+                              SizedBox(height: 2),
                               Text(s.description,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                       fontSize: 12,
                                       height: 1.35,
-                                      color: AppColors.textMuted)),
+                                      color: context.pal.muted)),
                             ],
                           ),
                         ),
@@ -291,9 +292,9 @@ class _SeveritySheet extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: () =>
                       Navigator.pop(context, const _SheetResult.remove()),
-                  icon: const Icon(CupertinoIcons.delete,
+                  icon: Icon(CupertinoIcons.delete,
                       size: 18, color: AppColors.unsafe),
-                  label: const Text('Remove from my profile',
+                  label: Text('Remove from my profile',
                       style: TextStyle(color: AppColors.unsafe)),
                 ),
               ),

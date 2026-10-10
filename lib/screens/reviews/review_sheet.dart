@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -78,10 +79,10 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
             children: [
               Text('Write a safety review',
                   style: Theme.of(context).textTheme.headlineSmall),
-              const SizedBox(height: 4),
-              const Text('Help others with the same needs eat safely.',
-                  style: TextStyle(color: AppColors.textMuted)),
-              const SizedBox(height: 20),
+              SizedBox(height: 4),
+              Text('Help others with the same needs eat safely.',
+                  style: TextStyle(color: context.pal.muted)),
+              SizedBox(height: 20),
               Row(
                 children: [
                   for (var i = 1; i <= 5; i++)
@@ -108,12 +109,12 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 ],
               ),
               if (_ratingError)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.only(top: 6),
                   child: Text('Please choose a rating',
                       style: TextStyle(color: AppColors.unsafe, fontSize: 12)),
                 ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _SwitchRow(
                 label: 'The kitchen used a dedicated fryer or prep area',
                 value: _fryer,
@@ -124,7 +125,7 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 value: _staff,
                 onChanged: (v) => setState(() => _staff = v),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               TextFormField(
                 controller: _comment,
                 maxLines: 4,
@@ -144,9 +145,9 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(_error!,
-                      style: const TextStyle(color: AppColors.unsafe)),
+                      style: TextStyle(color: AppColors.unsafe)),
                 ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               LoadingButton(
                 label: 'Post review',
                 onPressed: _submit,
@@ -177,8 +178,8 @@ class _SwitchRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(height: 1.35))),
-          const SizedBox(width: 12),
+          Expanded(child: Text(label, style: TextStyle(height: 1.35))),
+          SizedBox(width: 12),
           CupertinoSwitch(
             value: value,
             activeTrackColor: AppColors.primary,

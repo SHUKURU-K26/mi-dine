@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:mi_dine/core/theme/app_palette.dart';
 
 class SkeletonBox extends StatefulWidget {
   const SkeletonBox({
@@ -40,7 +40,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: AppColors.primaryTint,
+          color: context.pal.tint,
           borderRadius: BorderRadius.circular(widget.radius),
         ),
       ),

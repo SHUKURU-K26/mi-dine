@@ -52,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(greeting, style: TextStyle(color: pal.muted)),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text('Hello, $first',
                                 style:
                                     Theme.of(context).textTheme.headlineMedium),
@@ -69,8 +69,8 @@ class HomeScreen extends ConsumerWidget {
                           backgroundColor: pal.tint,
                           child: Text(
                             first.substring(0, 1).toUpperCase(),
-                            style: const TextStyle(
-                              color: AppColors.primary,
+                            style: TextStyle(
+                              color: context.pal.accent,
                               fontWeight: FontWeight.w700,
                               fontSize: 18,
                             ),
@@ -80,12 +80,12 @@ class HomeScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22),
                 FadeSlideIn(
                   delayMs: 80,
                   child: _ProfileHero(onEdit: () => nav.select(3)),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 FadeSlideIn(
                   delayMs: 160,
                   child: SizedBox(
@@ -96,7 +96,7 @@ class HomeScreen extends ConsumerWidget {
                           flex: 11,
                           child: _TicketTile(onTap: () => nav.select(2)),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           flex: 10,
                           child: Column(
@@ -109,7 +109,7 @@ class HomeScreen extends ConsumerWidget {
                                   onTap: () => nav.select(1),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: 12),
                               Expanded(
                                 child: _MiniTile(
                                   icon: CupertinoIcons.qrcode_viewfinder,
@@ -125,7 +125,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 26),
+                SizedBox(height: 26),
                 FadeSlideIn(
                   delayMs: 240,
                   child: _SectionHeader(
@@ -134,9 +134,9 @@ class HomeScreen extends ConsumerWidget {
                     onAction: () => nav.select(1),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 const FadeSlideIn(delayMs: 280, child: _RestaurantStrip()),
-                const SizedBox(height: 26),
+                SizedBox(height: 26),
                 const FadeSlideIn(delayMs: 320, child: _DisclaimerCard()),
               ],
             ),
@@ -162,7 +162,7 @@ class _ProfileHero extends ConsumerWidget {
       borderRadius: BorderRadius.circular(24),
       child: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -176,27 +176,27 @@ class _ProfileHero extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(22),
               child: mine.when(
-                loading: () => const SizedBox(
+                loading: () => SizedBox(
                   height: 120,
                   child: Center(
                       child: CupertinoActivityIndicator(color: Colors.white)),
                 ),
-                error: (_, __) => Column(
+                error: (_, _) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Could not load your profile',
+                    Text('Could not load your profile',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
                             fontSize: 16)),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     OutlinedButton(
                       onPressed: () => ref.invalidate(myAllergensProvider),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white54),
+                        side: BorderSide(color: Colors.white54),
                       ),
-                      child: const Text('Try again'),
+                      child: Text('Try again'),
                     ),
                   ],
                 ),
@@ -215,16 +215,16 @@ class _ProfileHero extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _GlassIcon(CupertinoIcons.shield_lefthalf_fill),
-        const SizedBox(height: 16),
-        const Text('Set up your medical profile',
+        SizedBox(height: 16),
+        Text('Set up your medical profile',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.w700, fontSize: 19)),
-        const SizedBox(height: 6),
-        const Text(
+        SizedBox(height: 6),
+        Text(
           'Add your allergens so Mi-Dine can build your Kitchen Ticket and check menus for you.',
           style: TextStyle(color: Colors.white70, height: 1.45),
         ),
-        const SizedBox(height: 18),
+        SizedBox(height: 18),
         FilledButton(
           onPressed: onEdit,
           style: FilledButton.styleFrom(
@@ -232,7 +232,7 @@ class _ProfileHero extends ConsumerWidget {
             foregroundColor: AppColors.primary,
             minimumSize: const Size(160, 46),
           ),
-          child: const Text('Get started'),
+          child: Text('Get started'),
         ),
       ],
     );
@@ -244,15 +244,15 @@ class _ProfileHero extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Your medical profile',
+        Text('Your medical profile',
             style: TextStyle(color: Colors.white70)),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Text(
           '${list.length} ${list.length == 1 ? 'trigger' : 'triggers'} saved',
-          style: const TextStyle(
+          style: TextStyle(
               color: Colors.white, fontWeight: FontWeight.w700, fontSize: 26),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -262,10 +262,10 @@ class _ProfileHero extends ConsumerWidget {
                 _GlassPill(icon: s.icon, text: '${count(s)} ${s.label}'),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         GestureDetector(
           onTap: onEdit,
-          child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
             Text('Edit profile',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w600)),
@@ -315,9 +315,9 @@ class _GlassPill extends StatelessWidget {
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 14, color: Colors.white),
-        const SizedBox(width: 6),
+        SizedBox(width: 6),
         Text(text,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
                 color: Colors.white)),
@@ -380,17 +380,17 @@ class _TicketTile extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Kitchen Ticket',
+                      Text('Kitchen Ticket',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: 17)),
-                      const SizedBox(height: 4),
-                      const Text('Show the chef in 5 languages',
+                      SizedBox(height: 4),
+                      Text('Show the chef in 5 languages',
                           style: TextStyle(
                               color: Colors.white70, fontSize: 12.5, height: 1.3)),
-                      const SizedBox(height: 12),
-                      const Row(mainAxisSize: MainAxisSize.min, children: [
+                      SizedBox(height: 12),
+                      Row(mainAxisSize: MainAxisSize.min, children: [
                         Text('Open',
                             style: TextStyle(
                                 color: Colors.white,
@@ -450,7 +450,7 @@ class _MiniTile extends StatelessWidget {
                   color: pal.tint,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 20, color: AppColors.primary),
+                child: Icon(icon, size: 20, color: context.pal.accent),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,8 +494,8 @@ class _SectionHeader extends StatelessWidget {
         GestureDetector(
           onTap: onAction,
           child: Text(action,
-              style: const TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+              style: TextStyle(
+                  color: context.pal.accent, fontWeight: FontWeight.w600)),
         ),
       ],
     );
@@ -523,11 +523,11 @@ class _RestaurantStrip extends ConsumerWidget {
             SkeletonBox(width: 176, height: 128, radius: 20),
           ],
         ),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: TextButton.icon(
             onPressed: () => ref.invalidate(restaurantsProvider),
-            icon: const Icon(CupertinoIcons.refresh, size: 18),
-            label: const Text('Could not load restaurants. Retry'),
+            icon: Icon(CupertinoIcons.refresh, size: 18),
+            label: Text('Could not load restaurants. Retry'),
           ),
         ),
         data: (items) => items.isEmpty
@@ -538,7 +538,7 @@ class _RestaurantStrip extends ConsumerWidget {
             : ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: items.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, _) => SizedBox(width: 12),
                 itemBuilder: (context, i) => _RestaurantCard(
                   restaurant: items[i],
                   onTap: () => Navigator.of(context).push(
@@ -589,12 +589,12 @@ class _RestaurantCard extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
                         color: pal.text)),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(restaurant.cuisine,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        color: AppColors.primary,
+                    style: TextStyle(
+                        color: context.pal.accent,
                         fontWeight: FontWeight.w600,
                         fontSize: 12.5)),
               ],
@@ -621,9 +621,9 @@ class _DisclaimerCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(CupertinoIcons.info_circle,
-              size: 20, color: AppColors.primary),
-          const SizedBox(width: 12),
+          Icon(CupertinoIcons.info_circle,
+              size: 20, color: context.pal.accent),
+          SizedBox(width: 12),
           Expanded(
             child: Text(
               'Mi-Dine is a communication aid. It does not replace medical advice or guarantee that a meal is safe. Always confirm with the kitchen.',

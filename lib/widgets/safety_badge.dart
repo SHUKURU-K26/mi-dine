@@ -20,7 +20,7 @@ class SafetyBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(level.icon, size: 14, color: level.color),
-          const SizedBox(width: 6),
+          SizedBox(width: 6),
           Text(level.label,
               style: TextStyle(
                   fontSize: 12,
