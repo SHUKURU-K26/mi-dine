@@ -46,5 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
-".env" 
-"*.apk" 
+
+.env
+*.apk
