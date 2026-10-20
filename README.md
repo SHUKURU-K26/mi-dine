@@ -30,7 +30,7 @@ Diners explain verbally to a busy server, carry a printed card, or rely on a res
 
 ## Download APK (Direct Link)
 
-[Download Android APK](<PASTE_GITHUB_RELEASE_LINK_HERE>)
+[Download Android APK] https://github.com/SHUKURU-K26/mi-dine/releases/download/v1.0.0/app-arm64-v8a-release.apk
 
 Install steps: open the link on an Android phone, download the file, allow "install from unknown sources" if asked, and open it. Requires Android 6.0 or newer and an internet connection.
 
