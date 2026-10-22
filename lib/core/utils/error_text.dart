@@ -4,7 +4,12 @@ String friendlyError(Object error) {
   if (error is AuthRetryableFetchException) {
     return 'No connection. Check your internet and try again.';
   }
-  if (error is AuthException) return error.message;
+    if (error is AuthException) {
+      if (error.message.toLowerCase().contains('email not confirmed')) {
+        return 'Please verify your email first. Check your inbox for the confirmation link.';
+      }
+      return error.message;
+    }
   if (error is PostgrestException) {
     if (error.code == '23505') {
       return 'You already have an ingredient with that name.';

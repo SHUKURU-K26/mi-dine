@@ -6,19 +6,35 @@ class AuthRepository {
   AuthRepository(this._client);
   final SupabaseClient _client;
 
-  Future<void> signIn({required String email, required String password}) =>
-      _client.auth.signInWithPassword(email: email.trim(), password: password);
+    /// Web returns to the page; Android returns through the deep link.
+  String? get _redirect => kIsWeb ? null : 'io.supabase.midine://login-callback/';
 
-  Future<void> signUp({
+    /// Returns true when the person must verify their email before signing in.
+  Future<bool> signUp({
     required String name,
     required String email,
     required String password,
-  }) =>
-      _client.auth.signUp(
-        email: email.trim(),
-        password: password,
-        data: {'full_name': name.trim()},
-      );
+  }) async {
+    final res = await _client.auth.signUp(
+      email: email.trim(),
+      password: password,
+      data: {'full_name': name.trim()},
+      emailRedirectTo: _redirect,
+    );
+    return res.session == null;
+  }
+
+  /// Sends a fresh confirmation email.
+  Future<void> resendConfirmation(String email) {
+    return _client.auth.resend(
+      type: OtpType.signup,
+      email: email.trim(),
+      emailRedirectTo: _redirect,
+    );
+  }
+
+  Future<void> signIn({required String email, required String password}) =>
+      _client.auth.signInWithPassword(email: email.trim(), password: password);
 
     Future<void> signInWithGoogle() => _client.auth.signInWithOAuth(
         OAuthProvider.google,

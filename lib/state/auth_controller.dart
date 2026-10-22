@@ -13,13 +13,16 @@ class AuthController extends AsyncNotifier<void> {
     );
   }
 
-  Future<void> signUp(String name, String email, String password) async {
+    /// Returns true when the person must verify their email first.
+  Future<bool> signUp(String name, String email, String password) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref
+    var needsConfirmation = false;
+    state = await AsyncValue.guard(() async {
+      needsConfirmation = await ref
           .read(authRepositoryProvider)
-          .signUp(name: name, email: email, password: password),
-    );
+          .signUp(name: name, email: email, password: password);
+    });
+    return needsConfirmation && !state.hasError;
   }
 
   Future<void> signInWithGoogle() async {
