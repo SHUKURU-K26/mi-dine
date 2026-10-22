@@ -14,6 +14,9 @@ import '../../widgets/restaurant_avatar.dart';
 import '../../widgets/skeleton_box.dart';
 import 'restaurant_detail_screen.dart';
 import 'scan_flow.dart';
+import '../../models/inputs.dart';
+import '../../repositories/restaurant_repository.dart';
+import 'restaurant_form_sheet.dart';
 
 class RestaurantsScreen extends ConsumerStatefulWidget {
   const RestaurantsScreen({super.key});
@@ -24,6 +27,39 @@ class RestaurantsScreen extends ConsumerStatefulWidget {
 
 class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
   final _search = TextEditingController();
+
+    Future<void> _addRestaurant() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final input = await showModalBottomSheet<RestaurantInput>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const RestaurantFormSheet(),
+    );
+    if (input == null) return;
+
+    try {
+      final created =
+          await ref.read(restaurantRepositoryProvider).addRestaurant(input);
+      ref.invalidate(restaurantsProvider);
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.safe,
+        content: Text('${created.name} added. Now add its dishes.'),
+      ));
+      _open(created);
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.unsafe,
+        content: Text(friendlyError(e)),
+      ));
+    }
+  }
 
   @override
   void dispose() {
@@ -49,10 +85,15 @@ class _RestaurantsScreenState extends ConsumerState<RestaurantsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Explore'),
-        actions: [
+                actions: [
+          IconButton(
+            tooltip: 'Add a restaurant',
+            icon: const Icon(CupertinoIcons.add_circled),
+            onPressed: _addRestaurant,
+          ),
           IconButton(
             tooltip: 'Scan QR code',
-            icon: Icon(CupertinoIcons.qrcode_viewfinder),
+            icon: const Icon(CupertinoIcons.qrcode_viewfinder),
             onPressed: _scan,
           ),
         ],
@@ -219,7 +260,10 @@ class _RestaurantCard extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16)),
                     SizedBox(height: 3),
-                    Text(restaurant.cuisine,
+                    Text(
+                        restaurant.isUserAdded
+                            ? '${restaurant.cuisine} · Member added'
+                            : restaurant.cuisine,
                         style: TextStyle(
                             color: context.pal.accent,
                             fontWeight: FontWeight.w600,

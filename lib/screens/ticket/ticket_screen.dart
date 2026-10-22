@@ -106,6 +106,9 @@ class _TicketBody extends ConsumerWidget {
           ),
         ),
         SizedBox(height: 24),
+        const _NoteCard(),
+        const SizedBox(height: 16),
+
         FilledButton.icon(
           onPressed: () => _openChefMode(context),
           icon: Icon(CupertinoIcons.eye),
@@ -229,6 +232,154 @@ class _LanguagePicker extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Shows the personal note and opens an editor to add, change or clear it.
+class _NoteCard extends ConsumerWidget {
+  const _NoteCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pal = context.pal;
+    final note = ref.watch(ticketNoteProvider).value ?? '';
+
+    return Material(
+      color: pal.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _edit(context, ref, note),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: pal.tint, width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Icon(CupertinoIcons.pencil_ellipsis_rectangle,
+                  size: 22, color: pal.accent),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(note.isEmpty ? 'Add a personal note' : 'Personal note',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, color: pal.text)),
+                    const SizedBox(height: 2),
+                    Text(
+                      note.isEmpty
+                          ? 'For example: I carry an EpiPen. Call me if unsure.'
+                          : note,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: pal.muted, fontSize: 13, height: 1.35),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(CupertinoIcons.chevron_right, size: 15, color: pal.muted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _edit(BuildContext context, WidgetRef ref, String current) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final text = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _NoteSheet(initial: current),
+    );
+    if (text == null) return;
+
+    try {
+      await ref.read(ticketNoteProvider.notifier).save(text);
+      messenger.showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.safe,
+        content: Text(text.trim().isEmpty ? 'Note removed' : 'Note saved'),
+      ));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.unsafe,
+        content: Text(friendlyError(e)),
+      ));
+    }
+  }
+}
+
+class _NoteSheet extends StatefulWidget {
+  const _NoteSheet({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_NoteSheet> createState() => _NoteSheetState();
+}
+
+class _NoteSheetState extends State<_NoteSheet> {
+  late final _controller = TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, 0, 20, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Personal note',
+              style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 4),
+          Text(
+            'It prints on your ticket exactly as typed. Write it in the kitchen\'s language if you can.',
+            style: TextStyle(color: context.pal.muted, height: 1.4, fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            maxLines: 4,
+            maxLength: 200,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(
+              hintText: 'I carry an EpiPen. Please call me if unsure.',
+            ),
+          ),
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, _controller.text),
+            child: const Text('Save note'),
+          ),
+          if (widget.initial.isNotEmpty)
+            Center(
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, ''),
+                child: const Text('Remove note',
+                    style: TextStyle(color: AppColors.unsafe)),
+              ),
+            ),
+        ],
       ),
     );
   }

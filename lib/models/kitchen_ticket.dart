@@ -27,6 +27,8 @@ class KitchenTicket {
     required this.sections,
     required this.closing,
     required this.footer,
+    this.note = '',
+    this.noteHeading = '',
   });
 
   final String language;
@@ -36,6 +38,8 @@ class KitchenTicket {
   final List<TicketSection> sections;
   final String closing;
   final String footer;
+  final String note;
+  final String noteHeading;
 
   /// Text version used for copy and share.
   String toPlainText() {
@@ -52,6 +56,12 @@ class KitchenTicket {
       for (final line in s.lines) {
         b.writeln('- $line');
       }
+    }
+    if (note.isNotEmpty) {
+      b
+        ..writeln()
+        ..writeln(noteHeading)
+        ..writeln(note);
     }
     b
       ..writeln()

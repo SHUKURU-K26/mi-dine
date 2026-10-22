@@ -71,6 +71,7 @@ class ReviewsSection extends ConsumerWidget {
                   _ReviewCard(
                     review: review,
                     isMine: review.userId == uid,
+                    onEdit: () => _write(context, existing: review),
                     onDelete: () => _delete(context, ref, review),
                   ),
               ],
@@ -81,23 +82,24 @@ class ReviewsSection extends ConsumerWidget {
     );
   }
 
-  Future<void> _write(BuildContext context) async {
+    Future<void> _write(BuildContext context, {Review? existing}) async {
     final messenger = ScaffoldMessenger.of(context);
-    final posted = await showModalBottomSheet<bool>(
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: context.pal.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => ReviewSheet(restaurantId: restaurantId),
+      builder: (_) => ReviewSheet(restaurantId: restaurantId, initial: existing),
     );
-    if (posted == true) {
-      messenger.showSnackBar(const SnackBar(
+    if (saved == true) {
+      messenger.showSnackBar(SnackBar(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.safe,
-        content: Text('Thank you. Your review is live.'),
+        content: Text(existing != null
+            ? 'Review updated'
+            : 'Thank you. Your review is live.'),
       ));
     }
   }
@@ -191,15 +193,18 @@ class _ReviewCard extends StatelessWidget {
   const _ReviewCard({
     required this.review,
     required this.isMine,
+    required this.onEdit,
     required this.onDelete,
   });
 
   final Review review;
   final bool isMine;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
+    final pal = context.pal;
     final d = review.createdAt.toLocal();
 
     return Container(
@@ -207,9 +212,9 @@ class _ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: context.pal.surface,
+        color: pal.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.pal.tint, width: 1.5),
+        border: Border.all(color: pal.tint, width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,36 +223,42 @@ class _ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: context.pal.tint,
+                backgroundColor: pal.tint,
                 child: Text(review.authorName.substring(0, 1).toUpperCase(),
                     style: TextStyle(
-                        color: context.pal.accent, fontWeight: FontWeight.w700)),
+                        color: pal.accent, fontWeight: FontWeight.w700)),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(review.authorName,
-                        style: TextStyle(fontWeight: FontWeight.w700)),
-                    Text('${d.day}/${d.month}/${d.year}',
                         style: TextStyle(
-                            color: context.pal.muted, fontSize: 12)),
+                            fontWeight: FontWeight.w700, color: pal.text)),
+                    Text('${d.day}/${d.month}/${d.year}',
+                        style: TextStyle(color: pal.muted, fontSize: 12)),
                   ],
                 ),
               ),
               StarRating(rating: review.rating, size: 14),
-              if (isMine)
+              if (isMine) ...[
+                IconButton(
+                  tooltip: 'Edit review',
+                  icon: Icon(CupertinoIcons.pencil, size: 18, color: pal.accent),
+                  onPressed: onEdit,
+                ),
                 IconButton(
                   tooltip: 'Delete review',
-                  icon: Icon(CupertinoIcons.trash,
+                  icon: const Icon(CupertinoIcons.trash,
                       size: 18, color: AppColors.unsafe),
                   onPressed: onDelete,
                 ),
+              ],
             ],
           ),
           if (review.dedicatedFryer || review.staffKnowledgeable) ...[
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Wrap(
               spacing: 8,
               runSpacing: 6,
@@ -258,8 +269,9 @@ class _ReviewCard extends StatelessWidget {
             ),
           ],
           if (review.comment.isNotEmpty) ...[
-            SizedBox(height: 10),
-            Text(review.comment, style: TextStyle(height: 1.45)),
+            const SizedBox(height: 10),
+            Text(review.comment,
+                style: TextStyle(height: 1.45, color: pal.text)),
           ],
         ],
       ),

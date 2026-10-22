@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mi_dine/core/theme/app_palette.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/utils/error_text.dart';
+import '../../models/review.dart';
 import '../../repositories/restaurant_repository.dart';
 import '../../state/restaurant_provider.dart';
 import '../../widgets/loading_button.dart';
 
+/// Writes a new review, or edits one when [initial] is given.
 class ReviewSheet extends ConsumerStatefulWidget {
-  const ReviewSheet({super.key, required this.restaurantId});
- 
+  const ReviewSheet({super.key, required this.restaurantId, this.initial});
+
   final String restaurantId;
+  final Review? initial;
 
   @override
   ConsumerState<ReviewSheet> createState() => _ReviewSheetState();
@@ -20,13 +23,15 @@ class ReviewSheet extends ConsumerStatefulWidget {
 
 class _ReviewSheetState extends ConsumerState<ReviewSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _comment = TextEditingController();
-  int _rating = 0;
-  bool _fryer = false;
-  bool _staff = false;
+  late final _comment = TextEditingController(text: widget.initial?.comment ?? '');
+  late int _rating = widget.initial?.rating ?? 0;
+  late bool _fryer = widget.initial?.dedicatedFryer ?? false;
+  late bool _staff = widget.initial?.staffKnowledgeable ?? false;
   bool _loading = false;
   bool _ratingError = false;
   String? _error;
+
+  bool get _editing => widget.initial != null;
 
   @override
   void dispose() {
@@ -45,14 +50,25 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
       _error = null;
     });
 
+    final repo = ref.read(restaurantRepositoryProvider);
     try {
-      await ref.read(restaurantRepositoryProvider).addReview(
-            restaurantId: widget.restaurantId,
-            rating: _rating,
-            comment: _comment.text,
-            dedicatedFryer: _fryer,
-            staffKnowledgeable: _staff,
-          );
+      if (_editing) {
+        await repo.updateReview(
+          widget.initial!.id,
+          rating: _rating,
+          comment: _comment.text,
+          dedicatedFryer: _fryer,
+          staffKnowledgeable: _staff,
+        );
+      } else {
+        await repo.addReview(
+          restaurantId: widget.restaurantId,
+          rating: _rating,
+          comment: _comment.text,
+          dedicatedFryer: _fryer,
+          staffKnowledgeable: _staff,
+        );
+      }
       ref.invalidate(reviewsProvider(widget.restaurantId));
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
@@ -67,6 +83,7 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final pal = context.pal;
     return Padding(
       padding: EdgeInsets.fromLTRB(
           20, 0, 20, 16 + MediaQuery.viewInsetsOf(context).bottom),
@@ -77,12 +94,12 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Write a safety review',
+              Text(_editing ? 'Edit your review' : 'Write a safety review',
                   style: Theme.of(context).textTheme.headlineSmall),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text('Help others with the same needs eat safely.',
-                  style: TextStyle(color: context.pal.muted)),
-              SizedBox(height: 20),
+                  style: TextStyle(color: pal.muted)),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   for (var i = 1; i <= 5; i++)
@@ -109,12 +126,12 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 ],
               ),
               if (_ratingError)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 6),
                   child: Text('Please choose a rating',
                       style: TextStyle(color: AppColors.unsafe, fontSize: 12)),
                 ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _SwitchRow(
                 label: 'The kitchen used a dedicated fryer or prep area',
                 value: _fryer,
@@ -125,7 +142,7 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 value: _staff,
                 onChanged: (v) => setState(() => _staff = v),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _comment,
                 maxLines: 4,
@@ -145,11 +162,11 @@ class _ReviewSheetState extends ConsumerState<ReviewSheet> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(_error!,
-                      style: TextStyle(color: AppColors.unsafe)),
+                      style: const TextStyle(color: AppColors.unsafe)),
                 ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               LoadingButton(
-                label: 'Post review',
+                label: _editing ? 'Save changes' : 'Post review',
                 onPressed: _submit,
                 isLoading: _loading,
               ),
@@ -178,11 +195,11 @@ class _SwitchRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: TextStyle(height: 1.35))),
-          SizedBox(width: 12),
+          Expanded(child: Text(label, style: const TextStyle(height: 1.35))),
+          const SizedBox(width: 12),
           CupertinoSwitch(
             value: value,
-            activeTrackColor: AppColors.primary,
+            activeTrackColor: context.pal.brand,
             onChanged: onChanged,
           ),
         ],

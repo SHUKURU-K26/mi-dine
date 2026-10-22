@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthRepository {
   AuthRepository(this._client);
@@ -19,9 +20,10 @@ class AuthRepository {
         data: {'full_name': name.trim()},
       );
 
-  Future<void> signInWithGoogle() => _client.auth.signInWithOAuth(
+    Future<void> signInWithGoogle() => _client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'io.supabase.midine://login-callback/',
+        // Web returns to the page itself; Android returns through the deep link.
+        redirectTo: kIsWeb ? null : 'io.supabase.midine://login-callback/',
       );
 
   Future<void> signOut() => _client.auth.signOut();

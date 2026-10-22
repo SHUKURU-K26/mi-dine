@@ -10,6 +10,7 @@ class TicketBuilder {
     required List<UserAllergen> allergens,
     required String languageCode,
     required String guestName,
+    String note = '',
   }) {
     final copy = TicketTemplates.copyOf(languageCode);
     final sorted = [...allergens]
@@ -52,6 +53,8 @@ class TicketBuilder {
       sections: sections,
       closing: copy.closing,
       footer: copy.footer,
+      note: note.trim(),
+      noteHeading: TicketTemplates.noteHeading(languageCode),
     );
   }
 }

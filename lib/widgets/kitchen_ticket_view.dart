@@ -43,6 +43,13 @@ class KitchenTicketView extends StatelessWidget {
                     SizedBox(height: 22 * scale),
                     _SectionView(section: section, scale: scale),
                   ],
+                   if (ticket.note.isNotEmpty) ...[
+                    SizedBox(height: 22 * scale),
+                    _NoteView(
+                        heading: ticket.noteHeading,
+                        note: ticket.note,
+                        scale: scale),
+                  ],
                   SizedBox(height: 24 * scale),
                   Divider(color: AppColors.primaryTint, thickness: 1.5),
                   SizedBox(height: 12 * scale),
@@ -179,6 +186,47 @@ class _SectionView extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoteView extends StatelessWidget {
+  const _NoteView({
+    required this.heading,
+    required this.note,
+    required this.scale,
+  });
+
+  final String heading;
+  final String note;
+  final double scale;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16 * scale),
+      decoration: BoxDecoration(
+        color: AppColors.primaryTint,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(heading,
+              style: TextStyle(
+                  color: AppColors.primaryDark,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12 * scale)),
+          SizedBox(height: 8 * scale),
+          Text(note,
+              style: TextStyle(
+                  fontSize: 16 * scale,
+                  height: 1.45,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.text)),
         ],
       ),
     );

@@ -54,6 +54,16 @@ class TicketTemplates {
       languages.firstWhere((l) => l.code == code, orElse: () => languages.first);
 
   static TicketCopy copyOf(String code) => _copy[code] ?? _copy['en']!;
+    static const _noteHeadings = {
+    'en': 'PERSONAL NOTE FROM THE GUEST',
+    'es': 'NOTA PERSONAL DEL CLIENTE',
+    'fr': 'NOTE PERSONNELLE DU CLIENT',
+    'ar': 'ملاحظة شخصية من الضيف',
+    'zh': '顾客个人备注',
+  };
+
+  static String noteHeading(String code) =>
+      _noteHeadings[code] ?? _noteHeadings['en']!;
 
   static const Map<String, TicketCopy> _copy = {
     'en': TicketCopy(

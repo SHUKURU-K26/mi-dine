@@ -7,12 +7,13 @@ import '../models/user_allergen.dart';
 import '../repositories/profile_repository.dart';
 import 'auth_provider.dart';
 
-/// Shared, read-only list of every allergen. Fetched once and cached.
-final allergenCatalogProvider = FutureProvider<List<Allergen>>(
-  (ref) => ref.read(profileRepositoryProvider).fetchCatalog(),
-);
+/// Standard allergens plus the user's own. Reloads when the user changes.
+final allergenCatalogProvider = FutureProvider<List<Allergen>>((ref) {
+  ref.watch(currentUserIdProvider);
+  return ref.read(profileRepositoryProvider).fetchCatalog();
+});
 
-/// The user's saved allergens. Reloads automatically if the user changes.
+/// The user's saved allergens.
 class MyAllergensNotifier extends AsyncNotifier<List<UserAllergen>> {
   @override
   Future<List<UserAllergen>> build() {
@@ -20,16 +21,36 @@ class MyAllergensNotifier extends AsyncNotifier<List<UserAllergen>> {
     return ref.read(profileRepositoryProvider).fetchMine();
   }
 
+  Future<void> _reload() async {
+    state = AsyncData(await ref.read(profileRepositoryProvider).fetchMine());
+  }
+
   Future<void> setSeverity(int allergenId, Severity severity) async {
-    final repo = ref.read(profileRepositoryProvider);
-    await repo.save(allergenId, severity);
-    state = AsyncData(await repo.fetchMine());
+    await ref.read(profileRepositoryProvider).save(allergenId, severity);
+    await _reload();
   }
 
   Future<void> remove(int allergenId) async {
-    final repo = ref.read(profileRepositoryProvider);
-    await repo.remove(allergenId);
-    state = AsyncData(await repo.fetchMine());
+    await ref.read(profileRepositoryProvider).remove(allergenId);
+    await _reload();
+  }
+
+  Future<void> addCustom(String name, Severity severity) async {
+    await ref.read(profileRepositoryProvider).addCustom(name, severity);
+    ref.invalidate(allergenCatalogProvider);
+    await _reload();
+  }
+
+  Future<void> renameCustom(int id, String name) async {
+    await ref.read(profileRepositoryProvider).renameCustom(id, name);
+    ref.invalidate(allergenCatalogProvider);
+    await _reload();
+  }
+
+  Future<void> deleteCustom(int id) async {
+    await ref.read(profileRepositoryProvider).deleteCustom(id);
+    ref.invalidate(allergenCatalogProvider);
+    await _reload();
   }
 }
 
